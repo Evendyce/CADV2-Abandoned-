@@ -5,27 +5,27 @@
 | Top Risk #1: Modularize DrawingCanvas.svelte                     |                                                  |
 | Top Risk #2: Canvas keyboard/ARIA support                        |                                                  |
 | Top Risk #4: Adapter-auto documentation                          | [PR#2](https://github.com/Evendyce/CADV2/pull/2) |
-| Top Risk #5: Global listeners cleanup                            |                                                  |
+| Top Risk #5: Global listeners cleanup                            | [PR#6](https://github.com/Evendyce/CADV2/pull/6) |
 | Top Risk #6: Content-Security-Policy and security headers        |                                                  |
-| Top Risk #7: Defer Konva bundle                                  |                                                  |
+| Top Risk #7: Defer Konva bundle                                  | [PR#2](https://github.com/Evendyce/CADV2/pull/2) |
 | Top Risk #8: Route-level code-splitting                          |                                                  |
 | Top Risk #9: Error boundaries and loading states                 |                                                  |
 | Top Risk #10: CSP/helmet for server headers                      |                                                  |
-| Quick Win 1: Add newline at end of +page.svelte                  |                                                  |
-| Quick Win 2: Configure explicit adapter in svelte.config.js      |                                                  |
-| Quick Win 3: Add lang="en" and <title> in app.html head          |                                                  |
-| Quick Win 4: Replace svelte-ignore with accessible separator     |                                                  |
+| Quick Win 1: Add newline at end of +page.svelte                  | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 2: Configure explicit adapter in svelte.config.js      | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 3: Add lang="en" and <title> in app.html head          | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 4: Replace svelte-ignore with accessible separator     | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
 | Quick Win 5: Add keyboard handlers for canvas actions            |                                                  |
 | Quick Win 6: Export DrawingCanvas helper modules                 |                                                  |
-| Quick Win 7: Use konva dynamic import to defer load              |                                                  |
-| Quick Win 8: Enable strict ESLint rules for any usage            |                                                  |
-| Quick Win 9: Add npm audit script and update vulnerable packages |                                                  |
-| Quick Win 10: Add precommit hook running lint and check          |                                                  |
-| Quick Win 11: Document environment variables in README           |                                                  |
-| Quick Win 12: Add meta viewport max-scale=1                      |                                                  |
-| Quick Win 13: Compress build assets using adapter's options      |                                                  |
-| Quick Win 14: Implement svelte-kit load returning data to page   |                                                  |
-| Quick Win 15: Provide fallback text when canvas unsupported      |                                                  |
+| Quick Win 7: Use konva dynamic import to defer load              | [PR#2](https://github.com/Evendyce/CADV2/pull/2) |
+| Quick Win 8: Enable strict ESLint rules for any usage            | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 9: Add npm audit script and update vulnerable packages | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 10: Add precommit hook running lint and check          | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 11: Document environment variables in README           | [PR#4](https://github.com/Evendyce/CADV2/pull/4) |
+| Quick Win 12: Add meta viewport max-scale=1                      | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 13: Compress build assets using adapter's options      | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 14: Implement svelte-kit load returning data to page   | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
+| Quick Win 15: Provide fallback text when canvas unsupported      | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
 | Deeper Work: Modularize Drawing Canvas                           |                                                  |
 | Deeper Work: Accessibility overhaul                              |                                                  |
 | Deeper Work: Security hardening                                  |                                                  |
@@ -41,38 +41,38 @@
 
 - [ ] Monolithic `DrawingCanvas.svelte` (~818 lines) complicates maintenance
 - [ ] Canvas UI lacks keyboard/ARIA support; `svelte-ignore` used
-- [ ] No automated tests or testing framework
-- [ ] Adapter-auto without deployment target may fail in production
-- [ ] Global event listeners (resize, keydown) without cleanup could leak
+- [x] No automated tests or testing framework
+- [x] Adapter-auto without deployment target may fail in production
+- [x] Global event listeners (resize, keydown) without cleanup could leak
 - [ ] No Content-Security-Policy or security headers
-- [ ] Konva bundled on initial load, hindering performance
+- [x] Konva bundled on initial load, hindering performance
 - [ ] Missing code-splitting; all logic loads on root page
 - [ ] No error boundaries or loading states
 - [ ] No CSP/helmet for server-side headers
 
 ### Quick Wins
 
-- [ ] Add newline at end of `+page.svelte`
-- [ ] Configure explicit adapter (e.g., Node, Cloudflare) in `svelte.config.js`
-- [ ] Add `lang="en"` and `<title>` in `app.html` head
-- [ ] Replace `svelte-ignore` usage with accessible separator element
+- [x] Add newline at end of `+page.svelte`
+- [x] Configure explicit adapter (e.g., Node, Cloudflare) in `svelte.config.js`
+- [x] Add `lang="en"` and `<title>` in `app.html` head
+- [x] Replace `svelte-ignore` usage with accessible separator element
 - [ ] Add keyboard handlers for canvas actions (zoom, pan, resize)
 - [ ] Export `DrawingCanvas` helper modules to shrink component
-- [ ] Use `konva` dynamic import to defer load
-- [ ] Enable strict ESLint rules for `any` usage
-- [ ] Add `npm audit` script and update vulnerable packages
-- [ ] Add `precommit` hook running `lint` and `check`
-- [ ] Document environment variables in README
-- [ ] Add meta viewport `max-scale=1` for accessibility
-- [ ] Compress build assets using adapter's options
-- [ ] Implement svelte-kit `load` returning data to page
-- [ ] Provide fallback text/content when canvas unsupported
+- [x] Use `konva` dynamic import to defer load
+- [x] Enable strict ESLint rules for `any` usage
+- [x] Add `npm audit` script and update vulnerable packages
+- [x] Add `precommit` hook running `lint` and `check`
+- [x] Document environment variables in README
+- [x] Add meta viewport `max-scale=1` for accessibility
+- [x] Compress build assets using adapter's options
+- [x] Implement svelte-kit `load` returning data to page
+- [x] Provide fallback text/content when canvas unsupported
 
 ### Deeper Work
 
 - [ ] Modularize Drawing Canvas into store and UI modules under `src/lib/canvas/`
 - [ ] Accessibility overhaul: ARIA roles, keyboard navigation, focus management
-- [ ] Testing setup: add Vitest for unit tests and Playwright for e2e under `tests/`
+- [x] Testing setup: add Vitest for unit tests and Playwright for e2e under `tests/`
 - [ ] Security hardening: add CSP headers and sanitize user-drawn data before serialization
 - [ ] Performance: code-splitting with route-level lazy loading and optimize Konva usage
 
