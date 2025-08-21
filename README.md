@@ -8,13 +8,13 @@ segment lengths in millimetres. All drawing logic lives in
 
 ## Tech Stack
 
-* [SvelteKit](https://kit.svelte.dev/) 2 with [Svelte](https://svelte.dev/) 5
-* [Konva](https://konvajs.org/) for canvas rendering
-* [Tailwind CSS](https://tailwindcss.com/) 4 for styling
-* [TypeScript](https://www.typescriptlang.org/)
-* [Vite](https://vitejs.dev/) for development and builds
-* [Vitest](https://vitest.dev/) for unit tests
-* [Playwright](https://playwright.dev/) for end‑to‑end tests
+- [SvelteKit](https://kit.svelte.dev/) 2 with [Svelte](https://svelte.dev/) 5
+- [Konva](https://konvajs.org/) for canvas rendering
+- [Tailwind CSS](https://tailwindcss.com/) 4 for styling
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/) for development and builds
+- [Vitest](https://vitest.dev/) for unit tests
+- [Playwright](https://playwright.dev/) for end‑to‑end tests
 
 ## Getting Started
 
@@ -43,5 +43,9 @@ Run the automated test suites:
 
 ```bash
 pnpm test       # unit tests (Vitest)
-pnpm test:e2e   # end‑to‑end tests (Playwright)
+ pnpm test:e2e   # end‑to‑end tests (Playwright)
 ```
+
+## Environment Variables
+
+This project currently does not require any environment variables for local development or builds.
