@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+        import { onMount } from 'svelte';
+        import {
+                getRenderScale as calcRenderScale,
+                mmToPx as calcMmToPx,
+                pxToMm as calcPxToMm,
+                snapZoomToNearest10
+        } from '$lib/canvas/utils';
 
   type CanvasState = 'draw' | 'manipulate' | 'view';
   let canvasState: CanvasState = 'draw';
@@ -68,23 +74,28 @@
 		statsHeight = Math.min(Math.max(newHeight, statsMinHeight), statsMaxHeight);
 	}
 
-	function stopResize() {
-		isResizing = false;
-		window.removeEventListener('mousemove', resizePanel);
-		window.removeEventListener('mouseup', stopResize);
-	}
+        function stopResize() {
+                isResizing = false;
+                window.removeEventListener('mousemove', resizePanel);
+                window.removeEventListener('mouseup', stopResize);
+        }
 
-	const getRenderScale = () => baseScale * (zoomPercent / 100);
+        function handleResizeKey(e: KeyboardEvent) {
+                if (e.key === 'ArrowUp') {
+                        statsHeight = Math.min(statsHeight + 10, statsMaxHeight);
+                }
+                if (e.key === 'ArrowDown') {
+                        statsHeight = Math.max(statsHeight - 10, statsMinHeight);
+                }
+        }
 
-	const mmToPx = (point: { x: number; y: number }) => {
-		const s = getRenderScale();
-		return [point.x * s, point.y * s];
-	};
+        const getRenderScale = () => calcRenderScale(baseScale, zoomPercent);
 
-	const pxToMm = (x: number, y: number) => {
-		const s = getRenderScale();
-		return { x: x / s, y: y / s };
-	};
+        const mmToPx = (point: { x: number; y: number }) =>
+                calcMmToPx(point, baseScale, zoomPercent);
+
+        const pxToMm = (x: number, y: number) =>
+                calcPxToMm(x, y, baseScale, zoomPercent);
 
 	const getDrawingBounds = () => {
 		const allPoints = anchors.flat();
@@ -114,9 +125,7 @@
 		visibleIndicators.bottom = maxY + offset.y > height;
 	}
 
-	function snapZoomToNearest10(percent: number) {
-		return Math.max(10, Math.round(percent / 10) * 10);
-	}
+        // snapZoomToNearest10 imported from utils
 
 	function zoomToFit() {
 		const bounds = getDrawingBounds();
@@ -485,18 +494,24 @@
 
 			stage.on('dragmove', updateIndicators);
 
-			window.addEventListener('keydown', (e) => {
-				if (e.key === 'Control') ctrlPressed = true;
-				if (e.key === ' ' || e.code === 'Space') spacePressed = true;
-				if (e.key === '+' || e.key === '=') zoomIn();
-				if (e.key === '-') zoomOut();
-				if (e.key === '0') resetZoom();
-				if (e.key === 'f') zoomToFit();
+                        window.addEventListener('keydown', (e) => {
+                                if (e.key === 'Control') ctrlPressed = true;
+                                if (e.key === ' ' || e.code === 'Space') spacePressed = true;
+                                if (e.key === '+' || e.key === '=') zoomIn();
+                                if (e.key === '-') zoomOut();
+                                if (e.key === '0') resetZoom();
+                                if (e.key === 'f') zoomToFit();
+                                const step = 10;
+                                if (e.key === 'ArrowUp') stage.y(stage.y() + step);
+                                if (e.key === 'ArrowDown') stage.y(stage.y() - step);
+                                if (e.key === 'ArrowLeft') stage.x(stage.x() + step);
+                                if (e.key === 'ArrowRight') stage.x(stage.x() - step);
+                                updateIndicators();
 
-				if (ctrlPressed || spacePressed) {
-					stage.draggable(true);
-				}
-			});
+                                if (ctrlPressed || spacePressed) {
+                                        stage.draggable(true);
+                                }
+                        });
 
 			window.addEventListener('keyup', (e) => {
 				if (e.key === 'Control') ctrlPressed = false;
@@ -689,22 +704,22 @@
 		class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-300 bg-white shadow-xl"
 		style="height: {statsHeight}px; min-height: {statsHeight}px; max-height: {statsMaxHeight}px;"
 	>
-		<!-- Drag handle -->
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="resize-handle relative flex w-full select-none items-center justify-center"
-			role="separator"
-			aria-orientation="horizontal"
-			on:mousedown={startResize}
-		>
+                <!-- Drag handle -->
+                <button
+                        class="resize-handle relative flex w-full select-none items-center justify-center"
+                        type="button"
+                        aria-label="Resize statistics panel"
+                        on:mousedown={startResize}
+                        on:keydown={handleResizeKey}
+                >
 			<div class="text-lg leading-none text-gray-400">⠿</div>
 
-			{#if statsHeight === statsMinHeight}
-				<div class="absolute top-full mt-1 animate-pulse text-xs text-gray-400">
-					<b>Click</b> and <b>Drag</b> to Expand
-				</div>
-			{/if}
-		</div>
+                        {#if statsHeight === statsMinHeight}
+                                <div class="absolute top-full mt-1 animate-pulse text-xs text-gray-400">
+                                        <b>Click</b> and <b>Drag</b> to Expand
+                                </div>
+                        {/if}
+                </button>
 
 		<!-- Panel content -->
 		<div class="mx-auto h-full max-w-screen-xl overflow-y-auto px-6 py-4 font-mono text-xs">
