@@ -8,7 +8,7 @@
 | Top Risk #5: Global listeners cleanup                            | [PR#6](https://github.com/Evendyce/CADV2/pull/6) |
 | Top Risk #6: Content-Security-Policy and security headers        | [PR#7](https://github.com/Evendyce/CADV2/pull/7) |
 | Top Risk #7: Defer Konva bundle                                  | [PR#2](https://github.com/Evendyce/CADV2/pull/2) |
-| Top Risk #8: Route-level code-splitting                          |                                                  |
+| Top Risk #8: Route-level code-splitting                          | [PR#8](https://github.com/Evendyce/CADV2/pull/8) |
 | Top Risk #9: Error boundaries and loading states                 |                                                  |
 | Top Risk #10: CSP/helmet for server headers                      |                                                  |
 | Quick Win 1: Add newline at end of +page.svelte                  | [PR#5](https://github.com/Evendyce/CADV2/pull/5) |
@@ -46,7 +46,7 @@
 - [x] Global event listeners (resize, keydown) without cleanup could leak
 - [x] No Content-Security-Policy or security headers
 - [x] Konva bundled on initial load, hindering performance
-- [ ] Missing code-splitting; all logic loads on root page
+- [x] Missing code-splitting; all logic loads on root page
 - [ ] No error boundaries or loading states
 - [ ] No CSP/helmet for server-side headers
 
@@ -87,7 +87,7 @@
 | 5   | Cleanup global event listeners                   | refactor/cleanup-listeners | `src/lib/components/DrawingCanvas.svelte`                    | Listeners registered with proper cleanup on destroy.              | ~40      | refactor     | [PR#6](https://github.com/Evendyce/CADV2/pull/6) |
 | 6   | Add CSP meta tags                                | security/csp-meta          | `src/app.html`                                               | Add CSP and security headers in HTML.                             | ~30      | security     | [PR#7](https://github.com/Evendyce/CADV2/pull/7) |
 | 7   | Lazy-load Konva                                  | perf/dynamic-konva         | `src/lib/components/DrawingCanvas.svelte`                    | Use dynamic import to load Konva on demand.                       | ~60      | perf         |                                                  |
-| 8   | Code-splitting root page                         | perf/code-split-root       | `src/routes/+page.svelte`                                    | Implement dynamic imports to defer heavy logic.                   | ~80      | perf         |                                                  |
+| 8   | Code-splitting root page                         | perf/code-split-root       | `src/routes/+page.svelte`                                    | Implement dynamic imports to defer heavy logic.                   | ~80      | perf         | [PR#8](https://github.com/Evendyce/CADV2/pull/8) |
 | 9   | Add error boundaries and loading states          | dx/error-boundaries        | `src/routes/+layout.svelte`, `src/routes/+page.svelte`       | Error boundary and loading UI added.                              | ~40      | dx           |                                                  |
 | 10  | Server-side security headers                     | security/server-headers    | `src/hooks.server.ts` or config                              | Set CSP and helmet-style headers on server responses.             | ~50      | security     |                                                  |
 | 11  | Newline at end of +page.svelte                   | dx/page-newline            | `src/routes/+page.svelte`                                    | File ends with newline; no shell artifact.                        | 1        | dx           |                                                  |
