@@ -2,7 +2,7 @@
 
 | Item                                                             | Done                                             |
 | ---------------------------------------------------------------- | ------------------------------------------------ |
-| Top Risk #1: Modularize DrawingCanvas.svelte                     |                                                  |
+| Top Risk #1: Modularize DrawingCanvas.svelte                     | [PR#9](https://github.com/Evendyce/CADV2/pull/9) |
 | Top Risk #2: Canvas keyboard/ARIA support                        |                                                  |
 | Top Risk #4: Adapter-auto documentation                          | [PR#2](https://github.com/Evendyce/CADV2/pull/2) |
 | Top Risk #5: Global listeners cleanup                            | [PR#6](https://github.com/Evendyce/CADV2/pull/6) |
@@ -39,7 +39,7 @@
 
 ### Top Risks
 
-- [ ] Monolithic `DrawingCanvas.svelte` (~818 lines) complicates maintenance
+- [x] Monolithic `DrawingCanvas.svelte` (~818 lines) complicates maintenance
 - [ ] Canvas UI lacks keyboard/ARIA support; `svelte-ignore` used
 - [x] No automated tests or testing framework
 - [x] Adapter-auto without deployment target may fail in production
@@ -79,9 +79,9 @@
 ## Planned Pull Requests
 
 | #   | Title                                            | Branch                     | Files/Areas                                                  | Acceptance Criteria                                               | Est. LOC | Labels       | Done                                             |
-| --- | ------------------------------------------------ | -------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- | -------- | ------------ | ------------------------------------------------ |
+| --- | ------------------------------------------------ | -------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- | -------- | ------------ | ------------------------------------------------ | ------------------------------------------------ |
 | 1   | Testing framework baseline (Vitest & Playwright) | tests/setup                | `package.json`, `tests/`                                     | Vitest and Playwright installed; sample tests run.                | ~80      | tests, dx    |                                                  |
-| 2   | Split DrawingCanvas into modules                 | refactor/split-canvas      | `src/lib/components/DrawingCanvas.svelte`, `src/lib/canvas/` | Component divided into store and UI modules with same behavior.   | ~400     | refactor     |                                                  |
+| 2   | Split DrawingCanvas into modules                 | refactor/split-canvas      | `src/lib/components/DrawingCanvas.svelte`, `src/lib/canvas/` | Component divided into store and UI modules with same behavior.   | ~400     | refactor     |                                                  | [PR#9](https://github.com/Evendyce/CADV2/pull/9) |
 | 3   | Add keyboard and ARIA support for canvas         | a11y/canvas-aria           | `src/lib/components/DrawingCanvas.svelte`                    | Keyboard navigation and ARIA roles added; remove `svelte-ignore`. | ~120     | a11y         |                                                  |
 | 4   | Configure explicit adapter                       | dx/adapter-node            | `svelte.config.js`                                           | Use `adapter-node` with production target.                        | ~20      | dx           |                                                  |
 | 5   | Cleanup global event listeners                   | refactor/cleanup-listeners | `src/lib/components/DrawingCanvas.svelte`                    | Listeners registered with proper cleanup on destroy.              | ~40      | refactor     | [PR#6](https://github.com/Evendyce/CADV2/pull/6) |
