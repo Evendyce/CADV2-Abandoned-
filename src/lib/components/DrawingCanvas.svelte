@@ -6,14 +6,18 @@
                 pxToMm as calcPxToMm,
                 snapZoomToNearest10
         } from '$lib/canvas/utils';
+        import { createStatsPanel } from '$lib/canvas/statsPanel';
 
   type CanvasState = 'draw' | 'manipulate' | 'view';
   let canvasState: CanvasState = 'draw';
 
-	let statsMinHeight = 50;
-	let statsHeight = 50;
-	let statsMaxHeight = 650;
-	let isResizing = false;
+        const {
+                statsHeight,
+                statsMinHeight,
+                statsMaxHeight,
+                startResize,
+                handleResizeKey
+        } = createStatsPanel();
 
 	let Konva: typeof import('konva').default;
 	let container: HTMLDivElement;
@@ -62,32 +66,7 @@
 	const SNAP_ANGLES = [0, 45, 90, 135, 180, -45, -90, -135, -180];
 	const ANGLE_THRESHOLD = 5; // degrees within which it will snap
 
-	function startResize(e: MouseEvent) {
-		isResizing = true;
-		window.addEventListener('mousemove', resizePanel);
-		window.addEventListener('mouseup', stopResize);
-	}
-
-	function resizePanel(e: MouseEvent) {
-		if (!isResizing) return;
-		const newHeight = window.innerHeight - e.clientY;
-		statsHeight = Math.min(Math.max(newHeight, statsMinHeight), statsMaxHeight);
-	}
-
-        function stopResize() {
-                isResizing = false;
-                window.removeEventListener('mousemove', resizePanel);
-                window.removeEventListener('mouseup', stopResize);
-        }
-
-        function handleResizeKey(e: KeyboardEvent) {
-                if (e.key === 'ArrowUp') {
-                        statsHeight = Math.min(statsHeight + 10, statsMaxHeight);
-                }
-                if (e.key === 'ArrowDown') {
-                        statsHeight = Math.max(statsHeight - 10, statsMinHeight);
-                }
-        }
+        
 
         const getRenderScale = () => calcRenderScale(baseScale, zoomPercent);
 
@@ -715,8 +694,8 @@
 
 	<!-- 🔽 STATS DRAWER (fixed to bottom) -->
 	<div
-		class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-300 bg-white shadow-xl"
-		style="height: {statsHeight}px; min-height: {statsHeight}px; max-height: {statsMaxHeight}px;"
+                class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-300 bg-white shadow-xl"
+                style="height: {$statsHeight}px; min-height: {$statsHeight}px; max-height: {statsMaxHeight}px;"
 	>
                 <!-- Drag handle -->
                 <button
@@ -728,7 +707,7 @@
                 >
 			<div class="text-lg leading-none text-gray-400">⠿</div>
 
-                        {#if statsHeight === statsMinHeight}
+                        {#if $statsHeight === statsMinHeight}
                                 <div class="absolute top-full mt-1 animate-pulse text-xs text-gray-400">
                                         <b>Click</b> and <b>Drag</b> to Expand
                                 </div>
