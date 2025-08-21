@@ -319,182 +319,187 @@
 		};
 	}
 
-	onMount(() => {
-		const init = async () => {
-			Konva = (await import('konva')).default;
-			anchorCircles = [];
-      let resizeTimeout: number;
+        onMount(() => {
+                let keydownHandler: (e: KeyboardEvent) => void;
+                let keyupHandler: (e: KeyboardEvent) => void;
+                let resizeHandler: () => void;
+                let debouncedResizeHandler: () => void;
 
-      function debouncedResize() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = window.setTimeout(() => {
-          if (container) updateSize();
-        }, 100); // delay can be adjusted
-      }
+                const init = async () => {
+                        Konva = (await import('konva')).default;
+                        anchorCircles = [];
+                        let resizeTimeout: number;
 
-			const updateSize = () => {
-        if (!container || !stage) return;
-        width = container.clientWidth;
-        height = container.clientHeight;
-        stage.width(width);
-        stage.height(height);
-        stage.draw();
-        updateIndicators();
-      };
+                        debouncedResizeHandler = () => {
+                                clearTimeout(resizeTimeout);
+                                resizeTimeout = window.setTimeout(() => {
+                                        if (container) updateSize();
+                                }, 100); // delay can be adjusted
+                        };
 
-      const updateSizeStabilized = () => {
-        updateSize();
-        setTimeout(updateSize, 0); // double-call after layout
-      };
+                        const updateSize = () => {
+                                if (!container || !stage) return;
+                                width = container.clientWidth;
+                                height = container.clientHeight;
+                                stage.width(width);
+                                stage.height(height);
+                                stage.draw();
+                                updateIndicators();
+                        };
+                        resizeHandler = updateSize;
 
-			stage = new Konva.Stage({ container, width: 0, height: 0, draggable: false });
-			updateSizeStabilized();
+                        const updateSizeStabilized = () => {
+                                updateSize();
+                                setTimeout(updateSize, 0); // double-call after layout
+                        };
 
-			layer = new Konva.Layer();
-			stage.add(layer);
+                        stage = new Konva.Stage({ container, width: 0, height: 0, draggable: false });
+                        updateSizeStabilized();
 
-			stage.on('mousedown', (e: any) => {
-				const target = e.target;
-				if (target && target.getClassName && target.getClassName() === 'Circle') {
-					// It's an anchor, don't handle as drawing click
-					return;
-				}
-				if (ctrlPressed || spacePressed) return;
-				const now = Date.now();
-				const pointer = stage.getPointerPosition();
-				if (!pointer) return;
-				const offset = stage.position();
-				const x = pointer.x - offset.x;
-				const y = pointer.y - offset.y;
-				let pos = pxToMm(x, y);
+                        layer = new Konva.Layer();
+                        stage.add(layer);
 
-				if (!isDrawing) {
-					currentLine = [pos];
-					const previewPoints = [...mmToPx(pos), ...mmToPx(pos)];
-					linePreview = new Konva.Line({
-						points: previewPoints,
-						stroke: 'black',
-						strokeWidth: 2,
-						lineCap: 'round',
-						lineJoin: 'round',
-						dash: [4, 4]
-					});
-					isDrawing = true;
-					lastClickTime = now;
-					lastClickPosition = pos;
-					layer.add(linePreview);
-				} else {
-					const timeSinceLastClick = now - lastClickTime;
-					const distanceFromLastClick = Math.hypot(
-						pos.x - (lastClickPosition?.x || 0),
-						pos.y - (lastClickPosition?.y || 0)
-					);
+                        stage.on('mousedown', (e: any) => {
+                                const target = e.target;
+                                if (target && target.getClassName && target.getClassName() === 'Circle') {
+                                        // It's an anchor, don't handle as drawing click
+                                        return;
+                                }
+                                if (ctrlPressed || spacePressed) return;
+                                const now = Date.now();
+                                const pointer = stage.getPointerPosition();
+                                if (!pointer) return;
+                                const offset = stage.position();
+                                const x = pointer.x - offset.x;
+                                const y = pointer.y - offset.y;
+                                let pos = pxToMm(x, y);
 
-					if (timeSinceLastClick < 300 && distanceFromLastClick < 2) {
-						if (currentLine.length === 1 && latestMouse) {
-							const adjusted = pxToMm(latestMouse.x - stage.x(), latestMouse.y - stage.y());
-							currentLine.push(adjusted);
-							linePreview.points(currentLine.flatMap(mmToPx));
-						}
+                                if (!isDrawing) {
+                                        currentLine = [pos];
+                                        const previewPoints = [...mmToPx(pos), ...mmToPx(pos)];
+                                        linePreview = new Konva.Line({
+                                                points: previewPoints,
+                                                stroke: 'black',
+                                                strokeWidth: 2,
+                                                lineCap: 'round',
+                                                lineJoin: 'round',
+                                                dash: [4, 4]
+                                        });
+                                        isDrawing = true;
+                                        lastClickTime = now;
+                                        lastClickPosition = pos;
+                                        layer.add(linePreview);
+                                } else {
+                                        const timeSinceLastClick = now - lastClickTime;
+                                        const distanceFromLastClick = Math.hypot(
+                                                pos.x - (lastClickPosition?.x || 0),
+                                                pos.y - (lastClickPosition?.y || 0)
+                                        );
 
-						if (currentLine.length < 2) {
-							linePreview?.destroy();
-						} else {
-							linePreview?.dash([]);
-							anchors = [...anchors, [...currentLine]];
-						}
+                                        if (timeSinceLastClick < 300 && distanceFromLastClick < 2) {
+                                                if (currentLine.length === 1 && latestMouse) {
+                                                        const adjusted = pxToMm(latestMouse.x - stage.x(), latestMouse.y - stage.y());
+                                                        currentLine.push(adjusted);
+                                                        linePreview.points(currentLine.flatMap(mmToPx));
+                                                }
 
-						if (snapPreview) snapPreview.destroy();
-						snapPreview = null;
-						snapActive = false;
+                                                if (currentLine.length < 2) {
+                                                        linePreview?.destroy();
+                                                } else {
+                                                        linePreview?.dash([]);
+                                                        anchors = [...anchors, [...currentLine]];
+                                                }
 
-						linePreview = null;
-						currentLine = [];
-						isDrawing = false;
-						redrawAll();
-						return;
-					}
+                                                if (snapPreview) snapPreview.destroy();
+                                                snapPreview = null;
+                                                snapActive = false;
 
-					const startedNewLine = currentLine.length === 0;
+                                                linePreview = null;
+                                                currentLine = [];
+                                                isDrawing = false;
+                                                redrawAll();
+                                                return;
+                                        }
 
-					// currentLine.push(pos);
-					if (currentLine.length > 0) {
-						const last = currentLine[currentLine.length - 1];
-						pos = snapAngle(last, pos); // ✨ Apply snapping!
-					}
-					currentLine.push(pos);
+                                        const startedNewLine = currentLine.length === 0;
 
-					linePreview.points([...currentLine.flatMap(mmToPx), ...mmToPx(pos)]);
+                                        if (currentLine.length > 0) {
+                                                const last = currentLine[currentLine.length - 1];
+                                                pos = snapAngle(last, pos); // ✨ Apply snapping!
+                                        }
+                                        currentLine.push(pos);
 
-					// Store as action
-					undoStack.push({
-						type: 'add-anchor',
-						lineIndex: anchors.length,
-						point: pos,
-						startedNewLine
-					});
+                                        linePreview.points([...currentLine.flatMap(mmToPx), ...mmToPx(pos)]);
 
-					redoStack = []; // Clear redo history
+                                        // Store as action
+                                        undoStack.push({
+                                                type: 'add-anchor',
+                                                lineIndex: anchors.length,
+                                                point: pos,
+                                                startedNewLine
+                                        });
 
-					lastClickTime = now;
-					lastClickPosition = pos;
-					redrawAll();
-				}
-			});
+                                        redoStack = []; // Clear redo history
 
-			stage.on('mousemove', (e: any) => {
-				if (!isDrawing || !linePreview) return;
-				const pointer = stage.getPointerPosition();
-				if (!pointer) return;
-				const offset = stage.position();
-				const x = pointer.x - offset.x;
-				const y = pointer.y - offset.y;
-				latestMouse = { x, y };
+                                        lastClickTime = now;
+                                        lastClickPosition = pos;
+                                        redrawAll();
+                                }
+                        });
 
-				if (isDrawing) {
-					const last =
-						currentLine.length > 0 ? currentLine[currentLine.length - 1] : anchors.at(-1)?.at(-1);
+                        stage.on('mousemove', (e: any) => {
+                                if (!isDrawing || !linePreview) return;
+                                const pointer = stage.getPointerPosition();
+                                if (!pointer) return;
+                                const offset = stage.position();
+                                const x = pointer.x - offset.x;
+                                const y = pointer.y - offset.y;
+                                latestMouse = { x, y };
 
-					const raw = pxToMm(x, y);
-					const snapped = last ? snapAngle(last, raw) : raw;
+                                if (isDrawing) {
+                                        const last =
+                                                currentLine.length > 0 ? currentLine[currentLine.length - 1] : anchors.at(-1)?.at(-1);
 
-					snapActive = !!last && Math.hypot(snapped.x - raw.x, snapped.y - raw.y) > 0.01;
+                                        const raw = pxToMm(x, y);
+                                        const snapped = last ? snapAngle(last, raw) : raw;
 
-					if (!snapPreview) {
-						snapPreview = new Konva.Line({
-							stroke: 'red',
-							strokeWidth: 1,
-							dash: [2, 4],
-							lineCap: 'round',
-							lineJoin: 'round'
-						});
-					} else {
-						layer.add(snapPreview);
-					}
+                                        snapActive = !!last && Math.hypot(snapped.x - raw.x, snapped.y - raw.y) > 0.01;
 
-					snapPreview.points(last ? [...mmToPx(last), ...mmToPx(snapped)] : []);
-				} else if (snapPreview) {
-					snapPreview.points([]);
-					snapActive = false;
-				}
+                                        if (!snapPreview) {
+                                                snapPreview = new Konva.Line({
+                                                        stroke: 'red',
+                                                        strokeWidth: 1,
+                                                        dash: [2, 4],
+                                                        lineCap: 'round',
+                                                        lineJoin: 'round'
+                                                });
+                                        } else {
+                                                layer.add(snapPreview);
+                                        }
 
-				const previewPoints = [...currentLine.flatMap(mmToPx), ...mmToPx(pxToMm(x, y))];
-				linePreview.points(previewPoints);
-				layer.batchDraw();
-			});
+                                        snapPreview.points(last ? [...mmToPx(last), ...mmToPx(snapped)] : []);
+                                } else if (snapPreview) {
+                                        snapPreview.points([]);
+                                        snapActive = false;
+                                }
 
-			stage.on('wheel', (e: any) => {
-				if (!ctrlPressed) return;
-				e.evt.preventDefault();
-				zoomPercent += e.evt.deltaY < 0 ? 10 : -10;
-				zoomPercent = Math.max(10, Math.min(500, zoomPercent));
-				zoomPercent = snapZoomToNearest10(zoomPercent);
-				redrawAll();
-			});
+                                const previewPoints = [...currentLine.flatMap(mmToPx), ...mmToPx(pxToMm(x, y))];
+                                linePreview.points(previewPoints);
+                                layer.batchDraw();
+                        });
 
-			stage.on('dragmove', updateIndicators);
+                        stage.on('wheel', (e: any) => {
+                                if (!ctrlPressed) return;
+                                e.evt.preventDefault();
+                                zoomPercent += e.evt.deltaY < 0 ? 10 : -10;
+                                zoomPercent = Math.max(10, Math.min(500, zoomPercent));
+                                zoomPercent = snapZoomToNearest10(zoomPercent);
+                                redrawAll();
+                        });
 
-                        window.addEventListener('keydown', (e) => {
+                        stage.on('dragmove', updateIndicators);
+
+                        keydownHandler = (e) => {
                                 if (e.key === 'Control') ctrlPressed = true;
                                 if (e.key === ' ' || e.code === 'Space') spacePressed = true;
                                 if (e.key === '+' || e.key === '=') zoomIn();
@@ -511,22 +516,31 @@
                                 if (ctrlPressed || spacePressed) {
                                         stage.draggable(true);
                                 }
-                        });
+                        };
 
-			window.addEventListener('keyup', (e) => {
-				if (e.key === 'Control') ctrlPressed = false;
-				if (e.key === ' ' || e.code === 'Space') spacePressed = false;
-				if (!ctrlPressed && !spacePressed) {
-					stage.draggable(false);
-				}
-			});
+                        keyupHandler = (e) => {
+                                if (e.key === 'Control') ctrlPressed = false;
+                                if (e.key === ' ' || e.code === 'Space') spacePressed = false;
+                                if (!ctrlPressed && !spacePressed) {
+                                        stage.draggable(false);
+                                }
+                        };
 
-			window.addEventListener('resize', updateSize);
-      window.addEventListener('resize', debouncedResize);
-		};
+                        window.addEventListener('keydown', keydownHandler);
+                        window.addEventListener('keyup', keyupHandler);
+                        window.addEventListener('resize', resizeHandler);
+                        window.addEventListener('resize', debouncedResizeHandler);
+                };
 
-		init();
-	});
+                init();
+
+                return () => {
+                        window.removeEventListener('keydown', keydownHandler);
+                        window.removeEventListener('keyup', keyupHandler);
+                        window.removeEventListener('resize', resizeHandler);
+                        window.removeEventListener('resize', debouncedResizeHandler);
+                };
+        });
 </script>
 
 <!-- PAGE LAYOUT -->
