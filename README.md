@@ -1,48 +1,47 @@
-# sv
+# CADV2 – Balustrade Canvas
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+CADV2 is an interactive CAD‑style drawing tool for sketching balustrade
+segments. The application provides draw, manipulate and view modes, angle
+snapping, zoom/pan controls and a resizable statistics panel that displays
+segment lengths in millimetres. All drawing logic lives in
+[`src/lib/components/DrawingCanvas.svelte`](src/lib/components/DrawingCanvas.svelte).
 
-## Creating a project
+## Tech Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+* [SvelteKit](https://kit.svelte.dev/) 2 with [Svelte](https://svelte.dev/) 5
+* [Konva](https://konvajs.org/) for canvas rendering
+* [Tailwind CSS](https://tailwindcss.com/) 4 for styling
+* [TypeScript](https://www.typescriptlang.org/)
+* [Vite](https://vitejs.dev/) for development and builds
+* [Vitest](https://vitest.dev/) for unit tests
+* [Playwright](https://playwright.dev/) for end‑to‑end tests
+
+## Getting Started
+
+Install dependencies and start the development server:
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+pnpm install
+pnpm dev
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+The server runs at `http://localhost:5173`. Use `pnpm dev -- --open` to open
+the app in a new browser tab automatically.
 
 ## Building
 
-To create a production version of your app:
+Create an optimized production build and preview it locally:
 
 ```bash
-npm run build
+pnpm build
+pnpm preview
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-> The project currently uses `@sveltejs/adapter-auto`.
-> TODO: select and configure the adapter once the deployment platform is known.
 ## Testing
 
-Run unit tests with [Vitest](https://vitest.dev):
+Run the automated test suites:
 
 ```bash
-pnpm test
+pnpm test       # unit tests (Vitest)
+pnpm test:e2e   # end‑to‑end tests (Playwright)
 ```
