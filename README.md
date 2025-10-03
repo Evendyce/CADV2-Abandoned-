@@ -1,3 +1,18 @@
+---
+---
+
+# Abandoned
+
+---
+---
+
+Project is Considered Abandoned. Reason being, that it is "Complete" with no future work intended, for this Implementation. However, a planned Project is in the Works to rebuild and Expand on this project.
+
+---
+---
+
+
+
 # CADV2 – Balustrade Canvas
 
 CADV2 is an interactive CAD‑style drawing tool for sketching balustrade
